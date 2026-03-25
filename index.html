@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Módulo 2 — Mentoria Leão | Saldanha Educação</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: { DEFAULT: '#B58F53', light: '#DCCB95', cream: '#F1EBBB', dark: '#8B6B3D', dim: 'rgba(181,143,83,0.5)' },
+            mentoria: { bg: '#000000', surface: 'rgba(181,143,83,0.06)', 'surface-hover': 'rgba(181,143,83,0.10)' }
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body: ['Montserrat', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #000;
+      font-family: 'Montserrat', sans-serif;
+      color: #DCCB95;
+      overflow-x: hidden;
+    }
+
+    /* ===== SNAP SCROLL ===== */
+    .slides-container {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100vh;
+    }
+
+    /* ===== SLIDE BASE ===== */
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      background: #000000;
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+
+    /* ===== NOISE TEXTURE ===== */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+      mix-blend-mode: overlay;
+    }
+
+    /* ===== CORNER ORNAMENTS ===== */
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .corner-tl { top: 16px; left: 16px; border-top: 1.5px solid rgba(181,143,83,0.12); border-left: 1.5px solid rgba(181,143,83,0.12); }
+    .corner-tr { top: 16px; right: 16px; border-top: 1.5px solid rgba(181,143,83,0.12); border-right: 1.5px solid rgba(181,143,83,0.12); }
+    .corner-bl { bottom: 16px; left: 16px; border-bottom: 1.5px solid rgba(181,143,83,0.12); border-left: 1.5px solid rgba(181,143,83,0.12); }
+    .corner-br { bottom: 16px; right: 16px; border-bottom: 1.5px solid rgba(181,143,83,0.12); border-right: 1.5px solid rgba(181,143,83,0.12); }
+
+    /* ===== GLOW ORBS ===== */
+    .glow-center::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(181,143,83,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 500px 500px at 20% 50%, rgba(181,143,83,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 500px 500px at 80% 50%, rgba(181,143,83,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-split::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 400px 400px at 25% 50%, rgba(181,143,83,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 75% 50%, rgba(181,143,83,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-spotlight::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(181,143,83,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-top-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 600px 500px at 75% 30%, rgba(181,143,83,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== GRADIENT TEXT ===== */
+    .gradient-text {
+      background: linear-gradient(135deg, #B58F53 0%, #DCCB95 50%, #F1EBBB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== GOLD DIVIDER ===== */
+    .gold-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #B58F53 20%, #DCCB95 50%, #B58F53 80%, transparent 100%);
+      border: none;
+      border-radius: 1px;
+    }
+    .gold-line-short {
+      width: 120px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .gold-line-glow {
+      box-shadow: 0 0 8px rgba(181,143,83,0.3), 0 0 20px rgba(181,143,83,0.1);
+    }
+
+    /* ===== GLASS CARD ===== */
+    .glass-card {
+      background: rgba(10,10,10,0.60);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(181,143,83,0.12);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.25), 0 0 60px rgba(181,143,83,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(181,143,83,0.4) 30%, rgba(220,203,149,0.5) 50%, rgba(181,143,83,0.4) 70%, transparent);
+      z-index: 1;
+    }
+
+    /* ===== LP CARD ===== */
+    .lp-card {
+      background: rgba(181,143,83,0.04);
+      border: 1px solid rgba(181,143,83,0.10);
+      border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    /* ===== BADGE/PILL ===== */
+    .module-badge {
+      display: inline-block;
+      border: 1px solid rgba(181,143,83,0.35);
+      border-radius: 999px;
+      padding: 6px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #B58F53;
+    }
+
+    /* ===== ICON CONTAINERS ===== */
+    .icon-contained {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(181,143,83,0.08);
+      border: 1px solid rgba(181,143,83,0.15);
+      border-radius: 12px;
+    }
+    .icon-contained-lg {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(181,143,83,0.06);
+      border: 1px solid rgba(181,143,83,0.12);
+      border-radius: 16px;
+    }
+
+    /* ===== GHOST ICON (large bg decoration) ===== */
+    .ghost-icon {
+      position: absolute;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== SLIDE NUMBER ===== */
+    .slide-number {
+      position: absolute;
+      bottom: 24px;
+      right: 32px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.65rem;
+      color: rgba(220,203,149,0.25);
+      z-index: 5;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== CTA PULSE ANIMATION ===== */
+    @keyframes pulse-arrow {
+      0%, 100% { opacity: 0.35; transform: translateX(0); }
+      50% { opacity: 0.9; transform: translateX(8px); }
+    }
+    .pulse-arrow {
+      animation: pulse-arrow 2s ease-in-out infinite;
+    }
+
+    /* ===== BULLET ROW ===== */
+    .bullet-row {
+      border-bottom: 1px solid rgba(181,143,83,0.08);
+    }
+    .bullet-row:last-child {
+      border-bottom: none;
+    }
+
+    /* ===== SEPARATOR SLIDE ===== */
+    .separator-slide {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== QUOTATION MARK DECO ===== */
+    .quote-deco {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-size: 20rem;
+      line-height: 1;
+      color: rgba(181,143,83,0.06);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+
+    /* ===== CONTENT Z-INDEX ===== */
+    .slide-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== PRINT MODE ===== */
+    @media print {
+      .slide {
+        page-break-after: always;
+        break-after: page;
+      }
+      .slides-container {
+        overflow: visible;
+        height: auto;
+        scroll-snap-type: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slides-container">
+
+    <!-- ============================================================ -->
+    <!-- AULA 2.1 — Introdução ao Mundo dos Leilões (9 slides)       -->
+    <!-- ============================================================ -->
+
+    <!-- SLIDE 1: COVER — Aula 2.1 -->
+    <section class="slide glow-center" id="s2-1-1">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: gavel -->
+      <div class="ghost-icon" style="right: -40px; top: 50%; transform: translateY(-50%);">
+        <svg width="520" height="520" viewBox="0 0 256 256" fill="none">
+          <path d="M96 56L200 160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+          <rect x="60" y="20" width="72" height="72" rx="8" transform="rotate(45 96 56)" stroke="#B58F53" stroke-width="3" fill="none"/>
+          <rect x="164" y="124" width="72" height="72" rx="8" transform="rotate(45 200 160)" stroke="#B58F53" stroke-width="3" fill="none"/>
+          <path d="M40 216h176" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+          <path d="M128 160v56" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex items-center h-full px-20">
+        <!-- Left: 60% -->
+        <div class="w-[60%] pl-8">
+          <div class="module-badge mb-8">Módulo 2 &nbsp;|&nbsp; Aula 1</div>
+          <h1 class="font-display text-[3.4rem] leading-[1.08] font-bold gradient-text mb-6" style="max-width: 700px;">
+            O Que É um<br>Leilão de Imóvel?
+          </h1>
+          <p class="text-gold-light text-[1.3rem] font-light tracking-wide" style="max-width: 560px;">
+            Definição legal, origens e consequências
+          </p>
+          <div class="gold-line mt-10" style="width: 280px;"></div>
+        </div>
+
+        <!-- Right: 40% — Hero Icon -->
+        <div class="w-[40%] flex items-center justify-center">
+          <div style="filter: drop-shadow(0 0 60px rgba(181,143,83,0.25));">
+            <svg width="260" height="260" viewBox="0 0 256 256" fill="none" opacity="0.45">
+              <path d="M96 56L200 160" stroke="#DCCB95" stroke-width="5" stroke-linecap="round"/>
+              <rect x="60" y="20" width="72" height="72" rx="8" transform="rotate(45 96 56)" stroke="#B58F53" stroke-width="3.5" fill="rgba(181,143,83,0.08)"/>
+              <rect x="164" y="124" width="72" height="72" rx="8" transform="rotate(45 200 160)" stroke="#B58F53" stroke-width="3.5" fill="rgba(181,143,83,0.08)"/>
+              <path d="M40 224h176" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+              <path d="M128 168v56" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">01 / 31</div>
+    </section>
+
+    <!-- SLIDE 2: SINGLE-TOPIC — Definição Legal -->
+    <section class="slide glow-left" id="s2-1-2">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: scales -->
+      <div class="ghost-icon" style="right: 80px; bottom: 60px;">
+        <svg width="400" height="400" viewBox="0 0 256 256" fill="none">
+          <path d="M128 32v192" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          <path d="M48 96l80-32 80 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M48 96l-16 64h64L80 96" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M208 96l-16 64h64l-16-64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M80 224h96" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <!-- Icon -->
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <path d="M128 32v192" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+            <path d="M48 96l80-32 80 32" stroke="#DCCB95" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M48 96l-16 64h64L80 96" stroke="#B58F53" stroke-width="3" fill="none"/>
+            <path d="M208 96l-16 64h64l-16-64" stroke="#B58F53" stroke-width="3" fill="none"/>
+            <path d="M80 224h96" stroke="#DCCB95" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Definição Legal
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 680px;">
+          Modalidade pública de venda — <strong class="text-gold-cream font-semibold">o maior lance vence.</strong>
+        </p>
+      </div>
+      <div class="slide-number">02 / 31</div>
+    </section>
+
+    <!-- SLIDE 3: SINGLE-TOPIC — Base Legal -->
+    <section class="slide glow-right" id="s2-1-3">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: book -->
+      <div class="ghost-icon" style="left: 60px; top: 80px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <path d="M48 48h160v176H48z" stroke="#B58F53" stroke-width="3" fill="none" rx="4"/>
+          <path d="M80 48v176" stroke="#B58F53" stroke-width="2.5"/>
+          <path d="M104 96h72" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M104 128h72" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M104 160h48" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <path d="M48 48h160v176H48z" stroke="#B58F53" stroke-width="5" fill="none" rx="4"/>
+            <path d="M80 48v176" stroke="#DCCB95" stroke-width="3.5"/>
+            <path d="M104 96h72" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M104 128h72" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M104 160h48" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Base Legal
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          Lei 14.133/2021 &nbsp;+&nbsp; Decreto 21.981/1932
+        </p>
+      </div>
+      <div class="slide-number">03 / 31</div>
+    </section>
+
+    <!-- SLIDE 4: HIGHLIGHT — Regra de Ouro -->
+    <section class="slide glow-spotlight" id="s2-1-4">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Decorative quote mark -->
+      <div class="quote-deco" style="top: -40px; left: 80px;">&ldquo;</div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center px-20">
+        <span class="module-badge mb-10" style="border-color: rgba(181,143,83,0.5); color: #DCCB95;">REGRA DE OURO</span>
+
+        <h2 class="font-display text-[3.2rem] font-bold gradient-text mb-8 leading-tight" style="max-width: 900px;">
+          Lance = contrato irrevogável
+        </h2>
+
+        <div class="gold-line gold-line-glow my-6" style="width: 200px; margin-left: auto; margin-right: auto;"></div>
+
+        <p class="text-[1.15rem] font-light mt-4" style="color: rgba(220,203,149,0.5);">
+          Consequências cíveis <strong class="font-medium" style="color: rgba(220,203,149,0.7);">E</strong> criminais
+        </p>
+      </div>
+      <div class="slide-number">04 / 31</div>
+    </section>
+
+    <!-- SLIDE 5: SECTION-TITLE — O Que Leva um Imóvel a Leilão? -->
+    <section class="slide glow-center" id="s2-1-5">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <div class="gold-line gold-line-short mb-10"></div>
+
+        <h1 class="font-display text-[3.2rem] font-bold gradient-text leading-tight" style="max-width: 900px;">
+          O Que Leva um Imóvel a Leilão?
+        </h1>
+
+        <div class="gold-line gold-line-short mt-10"></div>
+      </div>
+      <div class="slide-number">05 / 31</div>
+    </section>
+
+    <!-- SLIDE 6: BULLET-LIST — 5 Origens Mais Comuns -->
+    <section class="slide glow-left" id="s2-1-6">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1400px; margin: 0 auto;">
+        <!-- Header -->
+        <div class="flex items-center gap-5 mb-10">
+          <div class="icon-contained">
+            <svg width="28" height="28" viewBox="0 0 256 256" fill="none">
+              <path d="M128 48L48 96v64l80 48 80-48V96l-80-48z" stroke="#B58F53" stroke-width="4" fill="none"/>
+              <path d="M128 96v64" stroke="#DCCB95" stroke-width="3" stroke-linecap="round"/>
+              <path d="M88 120h80" stroke="#DCCB95" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-[2.4rem] font-bold gradient-text">
+            5 Origens Mais Comuns
+          </h2>
+        </div>
+
+        <!-- Bullet rows in glass card -->
+        <div class="glass-card p-0">
+          <!-- Row 1 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">1</div>
+            <p class="text-gold-light text-[1.2rem]">Inadimplência bancária <span class="text-gold/50">(alienação fiduciária)</span></p>
+          </div>
+          <!-- Row 2 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">2</div>
+            <p class="text-gold-light text-[1.2rem]">Execução judicial de dívidas</p>
+          </div>
+          <!-- Row 3 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">3</div>
+            <p class="text-gold-light text-[1.2rem]">Partilha litigiosa</p>
+          </div>
+          <!-- Row 4 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">4</div>
+            <p class="text-gold-light text-[1.2rem]">Dívidas tributárias</p>
+          </div>
+          <!-- Row 5 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">5</div>
+            <p class="text-gold-light text-[1.2rem]">Patrimônio público</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">06 / 31</div>
+    </section>
+
+    <!-- SLIDE 7: SINGLE-TOPIC — Cada Origem = Perfil Diferente -->
+    <section class="slide glow-right" id="s2-1-7">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: chart -->
+      <div class="ghost-icon" style="right: 100px; top: 100px;">
+        <svg width="360" height="360" viewBox="0 0 256 256" fill="none">
+          <path d="M48 208V48" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          <path d="M48 208h176" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          <path d="M80 168l48-40 40 24 48-72" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <path d="M48 208V48" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M48 208h176" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M80 168l48-40 40 24 48-72" stroke="#DCCB95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Cada Origem = Perfil Diferente
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 680px;">
+          Risco e desconto variam por tipo
+        </p>
+      </div>
+      <div class="slide-number">07 / 31</div>
+    </section>
+
+    <!-- SLIDE 8: RECAP — O Que Você Aprendeu -->
+    <section class="slide glow-center" id="s2-1-8">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1300px; margin: 0 auto;">
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text mb-10 text-center">
+          O Que Você Aprendeu
+        </h2>
+
+        <div class="glass-card p-0" style="max-width: 1000px; margin: 0 auto;">
+          <!-- Check 1 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Leilão = venda pública com força legal</p>
+          </div>
+          <!-- Check 2 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Lance = compromisso vinculante</p>
+          </div>
+          <!-- Check 3 -->
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">5 origens com perfis distintos</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">08 / 31</div>
+    </section>
+
+    <!-- SLIDE 9: CTA — Próxima Aula -->
+    <section class="slide glow-spotlight" id="s2-1-9">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <span class="text-[0.75rem] font-semibold tracking-[0.25em] uppercase text-gold mb-6">Próxima Aula</span>
+
+        <h2 class="font-display text-[3rem] font-bold gradient-text mb-5 leading-tight" style="max-width: 900px;">
+          Como Funciona o Jogo<br>dos Leilões
+        </h2>
+
+        <p class="text-gold-light/60 text-[1.15rem] font-light mb-10" style="max-width: 600px;">
+          Extrajudicial vs judicial, formatos e plataformas
+        </p>
+
+        <div class="pulse-arrow text-gold">
+          <svg width="48" height="48" viewBox="0 0 256 256" fill="none">
+            <path d="M48 128h160" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M168 88l40 40-40 40" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="slide-number">09 / 31</div>
+    </section>
+
+
+    <!-- ============================================================ -->
+    <!-- AULA SEPARATOR — 2.1 → 2.2                                  -->
+    <!-- ============================================================ -->
+    <section class="slide separator-slide" id="sep-2-1">
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <div class="gold-line gold-line-short mb-12"></div>
+        <span class="text-[0.8rem] font-semibold tracking-[0.3em] uppercase text-gold/40 mb-4">Módulo 2</span>
+        <h1 class="font-display text-[2.6rem] font-bold text-gold/30">Aula 2</h1>
+        <div class="gold-line gold-line-short mt-12"></div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================ -->
+    <!-- AULA 2.2 — Como Funciona o Jogo dos Leilões (11 slides)     -->
+    <!-- ============================================================ -->
+
+    <!-- SLIDE 10: COVER — Aula 2.2 -->
+    <section class="slide glow-center" id="s2-2-1">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: chess/strategy -->
+      <div class="ghost-icon" style="right: -20px; top: 50%; transform: translateY(-50%);">
+        <svg width="480" height="480" viewBox="0 0 256 256" fill="none">
+          <path d="M64 224h128" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          <path d="M80 224v-32h96v32" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M96 192v-48c0-16 16-32 32-48 16 16 32 32 32 48v48" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <circle cx="128" cy="72" r="20" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex items-center h-full px-20">
+        <div class="w-[60%] pl-8">
+          <div class="module-badge mb-8">Módulo 2 &nbsp;|&nbsp; Aula 2</div>
+          <h1 class="font-display text-[3.4rem] leading-[1.08] font-bold gradient-text mb-6" style="max-width: 700px;">
+            Entenda o Jogo<br>dos Leilões
+          </h1>
+          <p class="text-gold-light text-[1.3rem] font-light tracking-wide" style="max-width: 560px;">
+            Tipos, formatos e como se preparar
+          </p>
+          <div class="gold-line mt-10" style="width: 280px;"></div>
+        </div>
+
+        <div class="w-[40%] flex items-center justify-center">
+          <div style="filter: drop-shadow(0 0 60px rgba(181,143,83,0.25));">
+            <svg width="240" height="240" viewBox="0 0 256 256" fill="none" opacity="0.45">
+              <rect x="32" y="64" width="80" height="160" rx="8" stroke="#B58F53" stroke-width="3" fill="rgba(181,143,83,0.06)"/>
+              <rect x="144" y="32" width="80" height="192" rx="8" stroke="#DCCB95" stroke-width="3" fill="rgba(181,143,83,0.06)"/>
+              <path d="M56 120h32M56 152h32M56 184h32" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M168 88h32M168 120h32M168 152h32M168 184h32" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">10 / 31</div>
+    </section>
+
+    <!-- SLIDE 11: SINGLE-TOPIC — Dois Mundos, Duas Regras -->
+    <section class="slide glow-left" id="s2-2-2">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="right: 60px; bottom: 80px;">
+        <svg width="360" height="360" viewBox="0 0 256 256" fill="none">
+          <circle cx="96" cy="128" r="64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <circle cx="160" cy="128" r="64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <circle cx="96" cy="128" r="56" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <circle cx="160" cy="128" r="56" stroke="#DCCB95" stroke-width="4" fill="none"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Dois Mundos, Duas Regras
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          Extrajudicial e judicial — fundamentos diferentes
+        </p>
+      </div>
+      <div class="slide-number">11 / 31</div>
+    </section>
+
+    <!-- SLIDE 12: TWO-COLUMN — Extrajudicial vs Judicial -->
+    <section class="slide glow-split" id="s2-2-3">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1500px; margin: 0 auto;">
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text text-center mb-12">
+          Extrajudicial vs Judicial
+        </h2>
+
+        <div class="grid grid-cols-2 gap-10">
+          <!-- Left column -->
+          <div class="lp-card p-10">
+            <div class="flex items-center gap-4 mb-8">
+              <div class="icon-contained">
+                <svg width="26" height="26" viewBox="0 0 256 256" fill="none">
+                  <rect x="48" y="48" width="160" height="160" rx="12" stroke="#B58F53" stroke-width="4" fill="none"/>
+                  <path d="M128 88v80M88 128h80" stroke="#DCCB95" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="font-display text-[1.5rem] font-bold text-gold-light">Extrajudicial</h3>
+            </div>
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Banco determina</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Lei 9.514/97</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Sem juiz</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Mais rápido</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="lp-card p-10">
+            <div class="flex items-center gap-4 mb-8">
+              <div class="icon-contained">
+                <svg width="26" height="26" viewBox="0 0 256 256" fill="none">
+                  <path d="M128 32v192" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M48 96l80-32 80 32" stroke="#DCCB95" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M80 224h96" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="font-display text-[1.5rem] font-bold text-gold-light">Judicial</h3>
+            </div>
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Juiz determina</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">CPC 2015</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Processo judicial</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Pode levar anos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">12 / 31</div>
+    </section>
+
+    <!-- SLIDE 13: SINGLE-TOPIC — Descontos Típicos -->
+    <section class="slide glow-right" id="s2-2-4">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="left: 80px; top: 100px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <path d="M48 208l48-80 40 32 40-64 32 48" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M48 208h176" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <circle cx="128" cy="128" r="80" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M96 144l24-32h16l24-32" stroke="#DCCB95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="100" cy="104" r="12" stroke="#B58F53" stroke-width="3" fill="none"/>
+            <circle cx="156" cy="152" r="12" stroke="#B58F53" stroke-width="3" fill="none"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Descontos Típicos
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.5rem] font-light leading-relaxed" style="max-width: 700px;">
+          Extrajudicial: <strong class="text-gold-cream font-semibold">30–50%</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Judicial: <strong class="text-gold-cream font-semibold">40–70%</strong>
+        </p>
+      </div>
+      <div class="slide-number">13 / 31</div>
+    </section>
+
+    <!-- SLIDE 14: SINGLE-TOPIC — Recomendação para Iniciantes -->
+    <section class="slide glow-left" id="s2-2-5">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="right: 60px; top: 80px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <path d="M128 32l16 48h48l-40 28 16 48-40-28-40 28 16-48-40-28h48z" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <circle cx="128" cy="100" r="32" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M96 100c0 0 16 48 32 64 16-16 32-64 32-64" stroke="#DCCB95" stroke-width="3" fill="none"/>
+            <path d="M112 212h32" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+            <path d="M120 196h16" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.6rem] font-bold gradient-text mb-4">
+          Recomendação para Iniciantes
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          Comece pelo extrajudicial — <strong class="text-gold-cream font-semibold">mais previsível</strong>
+        </p>
+      </div>
+      <div class="slide-number">14 / 31</div>
+    </section>
+
+    <!-- SLIDE 15: SECTION-TITLE — Formatos de Leilão -->
+    <section class="slide glow-center" id="s2-2-6">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <div class="gold-line gold-line-short mb-10"></div>
+
+        <h1 class="font-display text-[3.2rem] font-bold gradient-text leading-tight">
+          Formatos de Leilão
+        </h1>
+
+        <div class="gold-line gold-line-short mt-10"></div>
+      </div>
+      <div class="slide-number">15 / 31</div>
+    </section>
+
+    <!-- SLIDE 16: BULLET-LIST — 3 Formatos -->
+    <section class="slide glow-left" id="s2-2-7">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1400px; margin: 0 auto;">
+        <div class="flex items-center gap-5 mb-10">
+          <div class="icon-contained">
+            <svg width="28" height="28" viewBox="0 0 256 256" fill="none">
+              <rect x="48" y="48" width="160" height="160" rx="16" stroke="#B58F53" stroke-width="4" fill="none"/>
+              <path d="M88 128h80" stroke="#DCCB95" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M88 96h80" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M88 160h48" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-[2.4rem] font-bold gradient-text">
+            3 Formatos
+          </h2>
+        </div>
+
+        <div class="glass-card p-0">
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">1</div>
+            <div>
+              <p class="text-gold-cream text-[1.2rem] font-semibold">Presencial</p>
+              <p class="text-gold-light/60 text-[0.95rem] mt-1">Lances ao vivo no salão</p>
+            </div>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">2</div>
+            <div>
+              <p class="text-gold-cream text-[1.2rem] font-semibold">Online</p>
+              <p class="text-gold-light/60 text-[0.95rem] mt-1">Plataformas digitais</p>
+            </div>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-7">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">3</div>
+            <div>
+              <p class="text-gold-cream text-[1.2rem] font-semibold">Híbrido</p>
+              <p class="text-gold-light/60 text-[0.95rem] mt-1">Presencial + online simultaneamente</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">16 / 31</div>
+    </section>
+
+    <!-- SLIDE 17: SINGLE-TOPIC — Online Domina o Mercado -->
+    <section class="slide glow-right" id="s2-2-8">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="right: 80px; bottom: 60px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <circle cx="128" cy="128" r="80" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <ellipse cx="128" cy="128" rx="80" ry="32" stroke="#B58F53" stroke-width="2" fill="none"/>
+          <ellipse cx="128" cy="128" rx="32" ry="80" stroke="#B58F53" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <rect x="32" y="48" width="192" height="128" rx="12" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M32 152h192" stroke="#DCCB95" stroke-width="3"/>
+            <path d="M96 176h64" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+            <path d="M128 176v32" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+            <path d="M96 208h64" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Online Domina o Mercado
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          Maioria dos leilões já é <strong class="text-gold-cream font-semibold">100% digital</strong>
+        </p>
+      </div>
+      <div class="slide-number">17 / 31</div>
+    </section>
+
+    <!-- SLIDE 18: BULLET-LIST — Preparação Técnica -->
+    <section class="slide glow-left" id="s2-2-9">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1400px; margin: 0 auto;">
+        <div class="flex items-center gap-5 mb-10">
+          <div class="icon-contained">
+            <svg width="28" height="28" viewBox="0 0 256 256" fill="none">
+              <path d="M128 48v160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+              <path d="M80 88l48-40 48 40" stroke="#DCCB95" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M80 168l48 40 48-40" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-[2.4rem] font-bold gradient-text">
+            Preparação Técnica
+          </h2>
+        </div>
+
+        <div class="glass-card p-0">
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">1</div>
+            <p class="text-gold-light text-[1.15rem]">Internet estável + backup</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">2</div>
+            <p class="text-gold-light text-[1.15rem]">Navegador testado na plataforma</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">3</div>
+            <p class="text-gold-light text-[1.15rem]">Timing: entender contagem regressiva</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">4</div>
+            <p class="text-gold-light text-[1.15rem]">Principais plataformas do Brasil</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">18 / 31</div>
+    </section>
+
+    <!-- SLIDE 19: RECAP — O Que Você Aprendeu -->
+    <section class="slide glow-center" id="s2-2-10">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1300px; margin: 0 auto;">
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text mb-10 text-center">
+          O Que Você Aprendeu
+        </h2>
+
+        <div class="glass-card p-0" style="max-width: 1000px; margin: 0 auto;">
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Extrajudicial vs judicial</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">3 formatos de leilão</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Online domina o mercado</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Preparação técnica é essencial</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">19 / 31</div>
+    </section>
+
+    <!-- SLIDE 20: CTA — Próxima Aula -->
+    <section class="slide glow-spotlight" id="s2-2-11">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <span class="text-[0.75rem] font-semibold tracking-[0.25em] uppercase text-gold mb-6">Próxima Aula</span>
+
+        <h2 class="font-display text-[3rem] font-bold gradient-text mb-5 leading-tight" style="max-width: 900px;">
+          O Papel do Leiloeiro<br>e a Legislação
+        </h2>
+
+        <p class="text-gold-light/60 text-[1.15rem] font-light mb-10" style="max-width: 600px;">
+          Quem é o leiloeiro e suas obrigações legais
+        </p>
+
+        <div class="pulse-arrow text-gold">
+          <svg width="48" height="48" viewBox="0 0 256 256" fill="none">
+            <path d="M48 128h160" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M168 88l40 40-40 40" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="slide-number">20 / 31</div>
+    </section>
+
+
+    <!-- ============================================================ -->
+    <!-- AULA SEPARATOR — 2.2 → 2.3                                  -->
+    <!-- ============================================================ -->
+    <section class="slide separator-slide" id="sep-2-2">
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <div class="gold-line gold-line-short mb-12"></div>
+        <span class="text-[0.8rem] font-semibold tracking-[0.3em] uppercase text-gold/40 mb-4">Módulo 2</span>
+        <h1 class="font-display text-[2.6rem] font-bold text-gold/30">Aula 3</h1>
+        <div class="gold-line gold-line-short mt-12"></div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================ -->
+    <!-- AULA 2.3 — O Papel do Leiloeiro e a Legislação (11 slides)  -->
+    <!-- ============================================================ -->
+
+    <!-- SLIDE 21: COVER — Aula 2.3 -->
+    <section class="slide glow-center" id="s2-3-1">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Ghost icon: person/leiloeiro -->
+      <div class="ghost-icon" style="right: -20px; top: 50%; transform: translateY(-50%);">
+        <svg width="480" height="480" viewBox="0 0 256 256" fill="none">
+          <circle cx="128" cy="80" r="40" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M64 224c0-36 28-64 64-64s64 28 64 64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex items-center h-full px-20">
+        <div class="w-[60%] pl-8">
+          <div class="module-badge mb-8">Módulo 2 &nbsp;|&nbsp; Aula 3</div>
+          <h1 class="font-display text-[3.4rem] leading-[1.08] font-bold gradient-text mb-6" style="max-width: 700px;">
+            Quem É o<br>Leiloeiro?
+          </h1>
+          <p class="text-gold-light text-[1.3rem] font-light tracking-wide" style="max-width: 560px;">
+            Decreto 21.981/1932 e suas obrigações
+          </p>
+          <div class="gold-line mt-10" style="width: 280px;"></div>
+        </div>
+
+        <div class="w-[40%] flex items-center justify-center">
+          <div style="filter: drop-shadow(0 0 60px rgba(181,143,83,0.25));">
+            <svg width="220" height="220" viewBox="0 0 256 256" fill="none" opacity="0.45">
+              <circle cx="128" cy="80" r="44" stroke="#B58F53" stroke-width="3.5" fill="rgba(181,143,83,0.06)"/>
+              <path d="M60 228c0-38 30-68 68-68s68 30 68 68" stroke="#DCCB95" stroke-width="3.5" fill="none"/>
+              <path d="M100 80h56" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M128 56v48" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">21 / 31</div>
+    </section>
+
+    <!-- SLIDE 22: SINGLE-TOPIC — Decreto-Lei 21.981/1932 -->
+    <section class="slide glow-left" id="s2-3-2">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="right: 60px; bottom: 60px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <path d="M64 32h128l32 32v160H64V32z" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M160 32v32h32" stroke="#B58F53" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M96 96h64" stroke="#B58F53" stroke-width="2" stroke-linecap="round"/>
+          <path d="M96 128h64" stroke="#B58F53" stroke-width="2" stroke-linecap="round"/>
+          <path d="M96 160h40" stroke="#B58F53" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <path d="M64 32h128l32 32v160H64V32z" stroke="#B58F53" stroke-width="5" fill="none"/>
+            <path d="M160 32v32h32" stroke="#DCCB95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M96 104h64" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M96 136h64" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Decreto-Lei 21.981/1932
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          A lei do leiloeiro — <strong class="text-gold-cream font-semibold">quase centenária</strong>
+        </p>
+      </div>
+      <div class="slide-number">22 / 31</div>
+    </section>
+
+    <!-- SLIDE 23: SINGLE-TOPIC — Pessoa Física, Não Jurídica -->
+    <section class="slide glow-right" id="s2-3-3">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="left: 80px; top: 80px;">
+        <svg width="360" height="360" viewBox="0 0 256 256" fill="none">
+          <circle cx="128" cy="96" r="48" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M64 240c0-36 28-64 64-64s64 28 64 64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <circle cx="128" cy="96" r="40" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M72 232c0-32 24-56 56-56s56 24 56 56" stroke="#DCCB95" stroke-width="4" fill="none"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.6rem] font-bold gradient-text mb-4">
+          Pessoa Física, Não Jurídica
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.3rem] font-light leading-relaxed" style="max-width: 720px;">
+          PJ só se finalidade exclusiva de leiloaria
+        </p>
+      </div>
+      <div class="slide-number">23 / 31</div>
+    </section>
+
+    <!-- SLIDE 24: TWO-COLUMN — Leiloeiro Rural vs Oficial -->
+    <section class="slide glow-split" id="s2-3-4">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1500px; margin: 0 auto;">
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text text-center mb-12">
+          Leiloeiro Rural vs Oficial
+        </h2>
+
+        <div class="grid grid-cols-2 gap-10">
+          <!-- Left column: Rural -->
+          <div class="lp-card p-10">
+            <div class="flex items-center gap-4 mb-8">
+              <div class="icon-contained">
+                <svg width="26" height="26" viewBox="0 0 256 256" fill="none">
+                  <path d="M32 208h192" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M80 208v-80l48-40 48 40v80" stroke="#DCCB95" stroke-width="3.5" fill="none" stroke-linejoin="round"/>
+                  <path d="M112 208v-40h32v40" stroke="#B58F53" stroke-width="3" fill="none"/>
+                </svg>
+              </div>
+              <h3 class="font-display text-[1.5rem] font-bold text-gold-light">Rural</h3>
+            </div>
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Bens móveis</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Zona rural</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: Oficial -->
+          <div class="lp-card p-10">
+            <div class="flex items-center gap-4 mb-8">
+              <div class="icon-contained">
+                <svg width="26" height="26" viewBox="0 0 256 256" fill="none">
+                  <path d="M48 208h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M128 48l80 48v16H48v-16l80-48z" stroke="#DCCB95" stroke-width="3.5" fill="none" stroke-linejoin="round"/>
+                  <path d="M72 112v96M128 112v96M184 112v96" stroke="#B58F53" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="font-display text-[1.5rem] font-bold text-gold-light">Oficial</h3>
+            </div>
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Imóveis e bens de valor</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M48 128h160" stroke="#B58F53" stroke-width="4" stroke-linecap="round"/><path d="M168 96l40 32-40 32" stroke="#B58F53" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-gold-light text-[1.1rem]">Nomeado pela Junta Comercial</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">24 / 31</div>
+    </section>
+
+    <!-- SLIDE 25: SINGLE-TOPIC — Como Identificar Leilão Falso? -->
+    <section class="slide glow-left" id="s2-3-5">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="right: 60px; top: 80px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <circle cx="112" cy="112" r="64" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M160 160l56 56" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <circle cx="112" cy="112" r="56" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M152 152l56 56" stroke="#DCCB95" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.6rem] font-bold gradient-text mb-4">
+          Como Identificar Leilão Falso?
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 720px;">
+          Verificar registro do leiloeiro na <strong class="text-gold-cream font-semibold">Junta Comercial</strong>
+        </p>
+      </div>
+      <div class="slide-number">25 / 31</div>
+    </section>
+
+    <!-- SLIDE 26: SINGLE-TOPIC — Cadastro Obrigatório -->
+    <section class="slide glow-right" id="s2-3-6">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="left: 80px; bottom: 60px;">
+        <svg width="360" height="360" viewBox="0 0 256 256" fill="none">
+          <path d="M48 80h160v128H48z" stroke="#B58F53" stroke-width="2.5" fill="none" rx="8"/>
+          <path d="M48 112h160" stroke="#B58F53" stroke-width="2"/>
+          <path d="M80 144h96" stroke="#B58F53" stroke-width="2" stroke-linecap="round"/>
+          <path d="M80 168h64" stroke="#B58F53" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <rect x="48" y="64" width="160" height="128" rx="12" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M48 100h160" stroke="#DCCB95" stroke-width="3"/>
+            <path d="M80 132h96" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+            <path d="M80 160h64" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.8rem] font-bold gradient-text mb-4">
+          Cadastro Obrigatório
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 700px;">
+          Cadastrar individualmente em <strong class="text-gold-cream font-semibold">cada site</strong>
+        </p>
+      </div>
+      <div class="slide-number">26 / 31</div>
+    </section>
+
+    <!-- SLIDE 27: BULLET-LIST — Obrigações do Leiloeiro -->
+    <section class="slide glow-left" id="s2-3-7">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1400px; margin: 0 auto;">
+        <div class="flex items-center gap-5 mb-10">
+          <div class="icon-contained">
+            <svg width="28" height="28" viewBox="0 0 256 256" fill="none">
+              <path d="M128 32l80 48v96l-80 48-80-48V80l80-48z" stroke="#B58F53" stroke-width="4" fill="none"/>
+              <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-[2.4rem] font-bold gradient-text">
+            Obrigações do Leiloeiro
+          </h2>
+        </div>
+
+        <div class="glass-card p-0">
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">1</div>
+            <p class="text-gold-light text-[1.15rem]">Publicar edital</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">2</div>
+            <p class="text-gold-light text-[1.15rem]">Conduzir o ato publicamente</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">3</div>
+            <p class="text-gold-light text-[1.15rem]">Lavrar ata de arrematação</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border border-gold/20 text-gold font-display font-bold text-xl">4</div>
+            <p class="text-gold-light text-[1.15rem]">Garantir publicidade legal</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">27 / 31</div>
+    </section>
+
+    <!-- SLIDE 28: HIGHLIGHT — Fórmula-Chave -->
+    <section class="slide glow-spotlight" id="s2-3-8">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <!-- Decorative quote mark -->
+      <div class="quote-deco" style="top: -40px; right: 100px;">&rdquo;</div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center px-20">
+        <span class="module-badge mb-10" style="border-color: rgba(181,143,83,0.5); color: #DCCB95;">FÓRMULA-CHAVE</span>
+
+        <h2 class="font-display text-[3.2rem] font-bold gradient-text mb-8 leading-tight" style="max-width: 900px;">
+          Comissão: mínimo 5%
+        </h2>
+
+        <div class="gold-line gold-line-glow my-6" style="width: 200px; margin-left: auto; margin-right: auto;"></div>
+
+        <p class="text-[1.15rem] font-light mt-4" style="color: rgba(220,203,149,0.5);">
+          Quem paga: <strong class="font-medium" style="color: rgba(220,203,149,0.7);">arrematante</strong> <span style="color: rgba(220,203,149,0.35);">(regra geral)</span>
+        </p>
+      </div>
+      <div class="slide-number">28 / 31</div>
+    </section>
+
+    <!-- SLIDE 29: SINGLE-TOPIC — Site do Leiloeiro = Extensão do Edital? -->
+    <section class="slide glow-right" id="s2-3-9">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="ghost-icon" style="left: 60px; top: 80px;">
+        <svg width="380" height="380" viewBox="0 0 256 256" fill="none">
+          <rect x="32" y="48" width="192" height="160" rx="12" stroke="#B58F53" stroke-width="2.5" fill="none"/>
+          <path d="M32 88h192" stroke="#B58F53" stroke-width="2"/>
+          <circle cx="56" cy="68" r="6" fill="#B58F53" opacity="0.3"/>
+          <circle cx="76" cy="68" r="6" fill="#B58F53" opacity="0.3"/>
+          <circle cx="96" cy="68" r="6" fill="#B58F53" opacity="0.3"/>
+        </svg>
+      </div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center" style="max-width: 1100px; margin: 0 auto;">
+        <div class="icon-contained-lg mb-8">
+          <svg width="40" height="40" viewBox="0 0 256 256" fill="none">
+            <rect x="32" y="48" width="192" height="160" rx="12" stroke="#B58F53" stroke-width="4" fill="none"/>
+            <path d="M32 88h192" stroke="#DCCB95" stroke-width="3"/>
+            <circle cx="56" cy="68" r="6" stroke="#B58F53" stroke-width="2" fill="rgba(181,143,83,0.2)"/>
+            <circle cx="76" cy="68" r="6" stroke="#B58F53" stroke-width="2" fill="rgba(181,143,83,0.2)"/>
+            <path d="M80 136h96" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+            <path d="M80 164h64" stroke="#B58F53" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text mb-4" style="max-width: 900px;">
+          Site do Leiloeiro = Extensão do Edital?
+        </h2>
+
+        <div class="gold-line gold-line-short my-6"></div>
+
+        <p class="text-gold-light text-[1.4rem] font-light leading-relaxed" style="max-width: 720px;">
+          Depende — <strong class="text-gold-cream font-semibold">regras do edital prevalecem</strong>
+        </p>
+      </div>
+      <div class="slide-number">29 / 31</div>
+    </section>
+
+    <!-- SLIDE 30: RECAP — O Que Você Aprendeu -->
+    <section class="slide glow-center" id="s2-3-10">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col justify-center h-full px-20" style="max-width: 1300px; margin: 0 auto;">
+        <h2 class="font-display text-[2.4rem] font-bold gradient-text mb-10 text-center">
+          O Que Você Aprendeu
+        </h2>
+
+        <div class="glass-card p-0" style="max-width: 1000px; margin: 0 auto;">
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Leiloeiro: PF com registro</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Cadastro individual por site</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Comissão mínimo 5%</p>
+          </div>
+          <div class="bullet-row flex items-center gap-6 px-10 py-6">
+            <div class="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+                <circle cx="128" cy="128" r="96" stroke="#B58F53" stroke-width="4" fill="rgba(181,143,83,0.06)"/>
+                <path d="M88 132l28 28 52-52" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="text-gold-light text-[1.15rem]">Verificar autenticidade sempre</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-number">30 / 31</div>
+    </section>
+
+    <!-- SLIDE 31: CTA — Próximo Módulo -->
+    <section class="slide glow-spotlight" id="s2-3-11">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="slide-content flex flex-col items-center justify-center h-full text-center">
+        <span class="text-[0.75rem] font-semibold tracking-[0.25em] uppercase text-gold mb-6">Próximo Módulo</span>
+
+        <h2 class="font-display text-[3rem] font-bold gradient-text mb-5 leading-tight" style="max-width: 900px;">
+          Mapeamento de<br>Oportunidade
+        </h2>
+
+        <p class="text-gold-light/60 text-[1.15rem] font-light mb-10" style="max-width: 600px;">
+          Teoria e prática — Módulo MIDAS
+        </p>
+
+        <div class="pulse-arrow text-gold">
+          <svg width="48" height="48" viewBox="0 0 256 256" fill="none">
+            <path d="M48 128h160" stroke="#B58F53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M168 88l40 40-40 40" stroke="#DCCB95" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="slide-number">31 / 31</div>
+    </section>
+
+  </div><!-- /slides-container -->
+</body>
+</html>
